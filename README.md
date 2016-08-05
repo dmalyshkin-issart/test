@@ -6,6 +6,7 @@ Master commit 2a here
 
 Master commit 3a here
 Master commit 3b here
+Master commit 3c here
 
 Added a second commit.
 
