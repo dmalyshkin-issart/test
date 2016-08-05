@@ -2,6 +2,7 @@
 Test repo
 
 Master commit 1a here
+Master commit 2a here
 
 Added a second commit.
 
