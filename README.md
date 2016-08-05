@@ -12,3 +12,5 @@ Branch A1 commit 3
 Branch A2 commit 1
 Branch A2 commit 2
 
+Master!
+
