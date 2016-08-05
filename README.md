@@ -4,6 +4,8 @@ Test repo
 Master commit 1a here
 Master commit 2a here
 
+Master commit 3a here
+
 Added a second commit.
 
 Branch A1 commit 1
