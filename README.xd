@@ -38,6 +38,7 @@ How to upload plugin to test jira server:
     * run 'atlas-clean & atlas-run' in jira-git-plugin/core folder, result: jira-git-plugin/code/target/jira_git_plugin-z.z.z.jar is created
     * open test jira in browser, go to Administration -> Addons -> Plugins menu -> "Install Plugins" tab -> click button "Upload Plugin" -> choose jira-git-plugin/code/target/jira_git_plugin-z.z.z.jar
 
+Here we inserted a line 7.
 Advices for new developers:
     * read coding standards code/dev-docs/frontend-guideline.md
     * create own test git repository on gitHub or somewhere for local tests to be able to repeate bugs locally
