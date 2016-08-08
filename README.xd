@@ -41,6 +41,7 @@ How to upload plugin to test jira server:
 Advices for new developers:
     * read coding standards code/dev-docs/frontend-guideline.md
     * create own test git repository on gitHub or somewhere for local tests to be able to repeate bugs locally
+Here we inserted a line 6.
     * Jira Aui matrics (https://bitbucket.org/atlassian/aui-adg/wiki/versions/product-version-matrix) is used time to time to understand, if some UI component is supported in Jira Z.Z or not
     * http://localhost:2990/jira/rest/gitplugin/1.0/application.wadl - shows all REST API provided by git plugin
 
