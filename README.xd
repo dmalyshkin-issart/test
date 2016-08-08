@@ -33,6 +33,7 @@ Here we inserted a line 4.
 
 Here we inserted a line 1.
 
+Here we inserted a line 12.
 How to upload plugin to test jira server:
 Here we inserted a line 11.
     * edit com.xiplink.jira.git.licensing.LicensingUtils. isLicensed() should return true always
