@@ -27,6 +27,8 @@ List of online services in use. You should have access to each of them:
     * DigMyData AWS CodeCommit (https://console.aws.amazon.com/codecommit) (the same access as to DigMyData AWS) - it's git server hosting jira-git-js-common
     * DigMyData AWS S3/maven.bigbrassband.com (https://console.aws.amazon.com/s3) (the same access as to DigMyData AWS) - it's public maven repository for jira-git-common versions
 
+Here we inserted a line.
+
 How to upload plugin to test jira server:
     * edit com.xiplink.jira.git.licensing.LicensingUtils. isLicensed() should return true always
     * run 'atlas-clean & atlas-run' in jira-git-plugin/core folder, result: jira-git-plugin/code/target/jira_git_plugin-z.z.z.jar is created
