@@ -34,6 +34,7 @@ Here we inserted a line 4.
 Here we inserted a line 1.
 
 How to upload plugin to test jira server:
+Here we inserted a line 11.
     * edit com.xiplink.jira.git.licensing.LicensingUtils. isLicensed() should return true always
 Here we inserted a line 10.
     * run 'atlas-clean & atlas-run' in jira-git-plugin/core folder, result: jira-git-plugin/code/target/jira_git_plugin-z.z.z.jar is created
