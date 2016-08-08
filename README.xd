@@ -44,6 +44,8 @@ Advices for new developers:
     * Jira Aui matrics (https://bitbucket.org/atlassian/aui-adg/wiki/versions/product-version-matrix) is used time to time to understand, if some UI component is supported in Jira Z.Z or not
     * http://localhost:2990/jira/rest/gitplugin/1.0/application.wadl - shows all REST API provided by git plugin
 
+Here we inserted a line 5.
+
 FAQ:
     * How to force Git-Plugin to make "Git commits" tab actual?
       Answer:     Do repository reindex. Administration -> Add-ons -> Git Repositories menu -> Click cogwheel icon (Action column) -> Click 'Reindex'
