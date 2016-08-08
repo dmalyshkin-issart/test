@@ -17,6 +17,7 @@ List of online services in use. You should have access to each of them:
     * <your-name>@bigbrassband.com - gmail account. You should answer to clients on behalf of the email. Is used as login for https://bigbrassband.freshdesk.com
 Here we inserted a line 3.
     * https://bigbrassband.freshdesk.com - support desk, i.e. it contains requests/questions from clients. Should be processed asap.
+Here we inserted a line 4.
     * (no account) https://marketplace.atlassian.com/plugins/com.xiplink.jira.git.jira_git_plugin - this is production. It has good documentation.
     * DigMyData AWS EC2 (https://digmydata.signin.aws.amazon.com/console) - this is AWS console, where you can find all test servers. Be careful, AWS resources are not free.
                                                                         Also we share the AWS with DigMyData, so here are not only our EC2 Instances. Don't touch them.
