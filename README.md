@@ -6,16 +6,26 @@ Master commit 2a here
 
 Added a second commit.
 
-Branch A1 commit 1
-Branch A1 commit 2
 Branch A1 commit 3
 
 Branch A2 commit 1
 Branch A2 commit 2
 
+А тут мы вставим строки.
+
+
 Branch F commit 1
-Branch F commit 2
+
+Много
+разных
+строк
+есть
+тутта
+
 Branch F commit 3
+
+И тут будут строки
+
 
 Master!
 Re-Master!
