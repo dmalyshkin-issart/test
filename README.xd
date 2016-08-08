@@ -35,6 +35,7 @@ Here we inserted a line 1.
 
 How to upload plugin to test jira server:
     * edit com.xiplink.jira.git.licensing.LicensingUtils. isLicensed() should return true always
+Here we inserted a line 10.
     * run 'atlas-clean & atlas-run' in jira-git-plugin/core folder, result: jira-git-plugin/code/target/jira_git_plugin-z.z.z.jar is created
 Here we inserted a line 9.
     * open test jira in browser, go to Administration -> Addons -> Plugins menu -> "Install Plugins" tab -> click button "Upload Plugin" -> choose jira-git-plugin/code/target/jira_git_plugin-z.z.z.jar
