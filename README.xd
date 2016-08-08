@@ -15,6 +15,7 @@ List of online services in use. You should have access to each of them:
                                            - also we use it for code review (see https://bigbrassband.com/documentation.html#repovw_compare_tab)
     * Jenkins (http://jenkins.bigbrassband.com) - it checks project health. We use it, to run integration tests, cause they take long time.
     * <your-name>@bigbrassband.com - gmail account. You should answer to clients on behalf of the email. Is used as login for https://bigbrassband.freshdesk.com
+Here we inserted a line 3.
     * https://bigbrassband.freshdesk.com - support desk, i.e. it contains requests/questions from clients. Should be processed asap.
     * (no account) https://marketplace.atlassian.com/plugins/com.xiplink.jira.git.jira_git_plugin - this is production. It has good documentation.
     * DigMyData AWS EC2 (https://digmydata.signin.aws.amazon.com/console) - this is AWS console, where you can find all test servers. Be careful, AWS resources are not free.
