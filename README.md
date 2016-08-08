@@ -4,6 +4,8 @@ Test repo
 Master commit 1a here
 Master commit 2a here
 
+Неужели в самом деле вставка строк всё портит нафиг?
+
 Added a second commit.
 
 Branch A1 commit 3
