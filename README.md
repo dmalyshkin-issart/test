@@ -13,6 +13,7 @@ Branch A1 commit 3
 
 А тут мы вставим строки.
 
+Test GIT-1159
 
 Branch F commit 1
 
