@@ -11,6 +11,7 @@ Master commit 3c here
 Added a second commit.
 
 commit 1
+commit 1
 
 Branch A1 commit 1
 Branch A1 commit 2
