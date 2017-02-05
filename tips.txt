@@ -1,0 +1,13 @@
+1. Remember about XSS.
+1.1 How to check?
+    - use url with "><script>alert("XSS")</script>. Ex: http://localhost:2990/jira/secure/bbb.gp.gitviewer.Commits.jspa?repoId=99&branchName=master&tagName=&commitId=&path="><script>alert("XSS")</script>39 
+    - create repository with name "><script>alert("XSS")</script>repoName
+1.2 Where it can be?
+    Ex.: in java don't call       addErrorMessage(getText("some.key", param))
+                 intead call      addErrorMessage(getText("some.key", StringEscapeUtils.escapeHtml(param))
+    Ex.: in *.vm don't call       $i18n.getText("some.key", param)
+                 instead call     $i18n.getText("some.key", $textutils.htmlEncode(param))
+    Ex.: in java don't use   'new ObjectMapper()' in somethingToJSON() method
+                 instead use 'new Gson()'
+    Ex.: in java be attentive with   getText("some.key", param)
+                 probabliy you need  getText("some.key", StringEscapeUtils.escapeHtml(param))
