@@ -11,3 +11,6 @@
                  instead use 'new Gson()'
     Ex.: in java be attentive with   getText("some.key", param)
                  probabliy you need  getText("some.key", StringEscapeUtils.escapeHtml(param))
+
+
+
