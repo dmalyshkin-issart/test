@@ -1,5 +1,8 @@
 # test
 
+Testing smart commits
+
+
 df'lfdgk;df
 ;lfdkgdf
 Test repo
