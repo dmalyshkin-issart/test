@@ -2,6 +2,7 @@
 
 Testing smart commits
 Testing smart commits
+Testing smart commits
 
 
 df'lfdgk;df
