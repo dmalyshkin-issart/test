@@ -1,5 +1,9 @@
 # test
 
+Smart commit 01
+Smart commit 02
+
+
 df'lfdgk;df
 ;lfdkgdf
 Test repo
