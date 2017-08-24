@@ -1,0 +1,52 @@
+How to debug:
+    * cd <git-plugin-repo>/code
+    * run 'atlas-debug' instead of 'atlas-run'
+    * open project in IDE
+    * attach debugger at port 5005
+
+How to run selenium tests:
+    * read <git-repo>/dev-docs/autotests.md
+
+List of online services in use. You should have access to each of them:
+    * JIRA (https://jira.bigbrassband.com) - contains list of issues, i.e. what to do
+                                           - also it's git server hosting jira-git-common and jira-git-plugin, i.e. it contains projects sources
+                                           - also we use it for code review (see https://bigbrassband.com/documentation.html#repovw_compare_tab)
+    * Jenkins (http://jenkins.bigbrassband.com) - it checks project health. We use it, to run integration tests, cause they take long time.
+    * <your-name>@bigbrassband.com - gmail account. You should answer to clients on behalf of the email. Is used as login for https://bigbrassband.freshdesk.com
+    * https://bigbrassband.freshdesk.com - support desk, i.e. it contains requests/questions from clients. Should be processed asap.
+    * (no account) https://marketplace.atlassian.com/plugins/com.xiplink.jira.git.jira_git_plugin - this is production. It has good documentation.
+    * DigMyData AWS EC2 (https://digmydata.signin.aws.amazon.com/console) - this is AWS console, where you can find all test servers. Be careful, AWS resources are not free.
+                                                                        Also we share the AWS with DigMyData, so here are not only our EC2 Instances. Don't touch them.
+    ** - Test JIRA 6.4    (http://testjira64.bigbrassband.com:8080) - this is test jira. Here you can test your plugin with jira 6.4. It's AWS EC2 instance.
+    ** - Test JIRA 6.3.11 ?                                         - this is test jira. Here you can test your plugin with jira 6.3. It's AWS EC2 instance.
+    ** - Test JIRA 6.1.2  ?                                         - this is test jira. Here you can test your plugin with jira 6.1. It's AWS EC2 instance.
+    ** - (Test JIRA *) but last time we use StackOnDemand JIRA plugin mostly to create Test JIRAs like Test JIRA 6.4, Test JIRA 6.3.11 etc.. (See button "Launch Stack" on https://jira.bigbrassband.com/browse/GIT-1586)
+    ** - Test Gerrit Code Review for JIRA                           - this is a gerrit server. It's AWS EC2 instance. Read about it in jira-git-plugin/dev-docs/ec2-instances/gerrit-server.txt
+    ** - TFS                                                        - this is a git server with NTLM auth. It's AWS EC2 instance. Is uses to test NTLM auth. Read about it in jira-git-plugin/dev-docs/ec2-instances/tfs-server.md
+    ** - Test DataCenter JIRA                                       - this is a claster with 2 jiras. Is used to test compatibility with Data Center. Read about it in jira-git-plugin/dev-docs/ec2-instances/data-center.txt
+    * DigMyData AWS CodeCommit (https://console.aws.amazon.com/codecommit) (the same access as to DigMyData AWS) - it's git server hosting jira-git-js-common
+    * DigMyData AWS S3/maven.bigbrassband.com (https://console.aws.amazon.com/s3) (the same access as to DigMyData AWS) - it's public maven repository for jira-git-common versions
+
+How to upload plugin to test jira server:
+    * edit com.xiplink.jira.git.licensing.LicensingUtils. isLicensed() should return true always
+    * run 'atlas-clean & atlas-run' in jira-git-plugin/core folder, result: jira-git-plugin/code/target/jira_git_plugin-z.z.z.jar is created
+    * open test jira in browser, go to Administration -> Addons -> Plugins menu -> "Install Plugins" tab -> click button "Upload Plugin" -> choose jira-git-plugin/code/target/jira_git_plugin-z.z.z.jar
+
+Advices for new developers:
+    * read coding standards code/dev-docs/frontend-guideline.md
+    * create own test git repository on gitHub or somewhere for local tests to be able to repeate bugs locally
+    * Jira Aui matrics (https://bitbucket.org/atlassian/aui-adg/wiki/versions/product-version-matrix) is used time to time to understand, if some UI component is supported in Jira Z.Z or not
+    * http://localhost:2990/jira/rest/gitplugin/1.0/application.wadl - shows all REST API provided by git plugin
+
+FAQ:
+    * How to force Git-Plugin to make "Git commits" tab actual?
+      Answer:     Do repository reindex. Administration -> Add-ons -> Git Repositories menu -> Click cogwheel icon (Action column) -> Click 'Reindex'
+
+    * I got the error 'TypeError $ is not a function' in browser webconsole when try to do jQuery select like '$(".myClass")'.
+      Solution:   Call 'AJS.$(".myClass")' instead
+
+Test accounts:
+    * https://github.com/AutoTestsUserISvirkinaBBB, password is 'bbb4ever!', its ssh keys are both
+        - code/src/test/resources/git-repositories/AutoTestsUserISvirkinaBBB_rsa
+        - code/src/test/resources/git-repositories/AutoTestsUserISvirkinaBBBWithPassphrase_rsa, password 12345
+      The account is registered from irina@bigbrassband.com email.
