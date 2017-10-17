@@ -1,3 +1,5 @@
+Smart commit 1-00
+
 # test
 
 Smart commit 01
