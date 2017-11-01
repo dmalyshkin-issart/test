@@ -1,30 +1,3 @@
-Smart commit 1-00
-Smart commit 1-01
-Smart commit 1-02
-Smart commit 1-03
-Smart commit 1-04
-Smart commit 1-05
-Smart commit 1-06
-Smart commit 1-07
-Smart commit 1-08
-Smart commit 1-09
-Smart commit 1-10
-Smart commit 1-11
-Smart commit 1-12
-Smart commit 1-13
-Smart commit 1-14
-Smart commit 1-15
-Smart commit 1-16
-Smart commit 1-17
-Smart commit 1-18
-Smart commit 1-19
-Smart commit 1-20
-Smart commit 1-21
-Smart commit 1-22
-Smart commit 1-23
-Smart commit 1-24
-Smart commit 1-25
-Smart commit 1-26
 
 # test
 
