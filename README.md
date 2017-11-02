@@ -8,6 +8,7 @@ Smart commit 2-06
 
 Smart commit 3-00
 Smart commit 3-01
+Smart commit 3-02
 
 
 # test
