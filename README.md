@@ -15,8 +15,10 @@ Smart commit 3-05
 Smart commit 3-06
 Smart commit 3-07
 Smart commit 3-08
+
 Smart commit 3-10
 Smart commit 3-11
+Smart commit 3-12
 
 
 # test
