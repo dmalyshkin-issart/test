@@ -1,4 +1,9 @@
 # test
+
+Smart commit 000
+
+
+
 Test repo
 Added a second commit.
 
