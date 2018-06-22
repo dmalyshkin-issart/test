@@ -2,6 +2,7 @@
 
 Testing commit handling
 Testing commit handling
+Testing commit handling
 
 Testing smart commits
 Testing smart commits
