@@ -8,6 +8,7 @@ Testing smart commits
 Testing smart commits
 Testing smart commits
 Testing smart commits
+Testing smart commits
 
 
 Test repo
