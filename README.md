@@ -1,5 +1,7 @@
 # test
 
+Testing commit handling
+
 Testing smart commits
 Testing smart commits
 Testing smart commits
