@@ -1,0 +1,416 @@
+        1. /opt/oracle/oraInventory/orainstRoot.sh
+        2. /opt/oracle/product/12.2.0.1/dbhome_1/root.sh
+
+
+oracledb.bigbrassband.tk
+
+i-0b25bc356c782d451
+
+
+docker run --name oracleserver -p 1521:1521 -p 5500:5500 -e ORACLE_PWD=oraclepass -v /home/ec2-user/oracledb/data:/opt/oracle/oradata oracle/database:12.2.0.1-se2
+
+
+
+
+
+
+===============================================
+
+cd /home/ec2-user
+wget http://download.oracle.com/otn/linux/oracle12c/122010/linuxx64_12201_database.zip
+mkdir oracledb
+cd oracledb
+mkdir data
+mkdir client
+sudo yum update -y
+sudo yum install -y git
+sudo yum install -y docker
+sudo service docker start
+sudo chkconfig docker on
+sudo usermod -a -G docker ec2-user
+cd /home/ec2-user
+git clone https://github.com/oracle/docker-images.git
+cd docker-images/OracleDatabase/dockerfiles
+mv ../../../linuxx64_12201_database.zip 12.2.0.1/
+sudo ./buildDockerImage.sh  -v 12.2.0.1 -s
+sudo docker run --name oracleserver -p 1521:1521 -p 5500:5500 -e ORACLE_PWD=oraclepass -v /opt/oracledb/data:/opt/oracle/oradata oracle/database:12.2.0.1-se2
+
+sudo docker start oracleserver
+
+./sqlplus.exe sys/oraclepass@//oracledb.bigbrassband.tk:1521/ORCLPDB1 as sysdba
+./sqlplus.exe jiradbuser/Password123@//oracledb.bigbrassband.tk:1521/ORCLPDB1
+./sqlplus.exe sys/oraclepass@//172.17.9.164:1521/ORCLPDB1 as sysdba
+./sqlplus.exe jiradbuser/Password123@//172.17.9.164:1521/ORCLPDB1
+./sqlplus.exe jiradenuser/Password123@//172.17.9.164:1521/ORCLPDB1
+
+create user jiradbuser identified by Password123 default tablespace USERS quota unlimited on USERS;
+grant connect to jiradbuser;
+grant create table to jiradbuser;
+grant create sequence to jiradbuser;
+grant create trigger to jiradbuser;
+
+download JDBC driver here:
+http://www.oracle.com/technetwork/database/features/jdbc/jdbc-ucp-122-3110062.html
+
+
+create user jiradenuser identified by Password123 default tablespace USERS quota unlimited on USERS;
+grant connect to jiradenuser;
+grant create table to jiradenuser;
+grant create sequence to jiradenuser;
+grant create trigger to jiradenuser;
+
+
+
+===============================================
+How to configure Jira to connect to Oracle
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. mvn install:install-file -Dfile=<D:\\_Denis\\Projects\\GitPlugin\\oracle\\ojdbc8.jar> -DgroupId=com.oracle -DartifactId=ojdbc8 -Dversion=12.2.0.1 -Dpackaging=jar
+
+2. Change DB server server parameters in pom.xml:
+
+3. atlas-debug.bat -DskipJsTests=true -DskipTests=true -Pjira7.6-oracle
+
+
+
+
+
+
+column username format a40
+
+===============================================
+
+column owner format a40
+column table_name format a40
+SELECT owner, table_name FROM all_tables;
+SELECT table_name FROM user_tables;
+SELECT table_name FROM dba_tables;
+
+column sequence_name format a40
+SELECT sequence_name FROM user_sequences;
+
+
+set colsep '|'
+set pagesize 10000
+set linesize 150
+column tbl_name format a40
+column trg_name format a40
+column seq_name format a40
+column name format a40
+column referenced_name format a40
+column referenced_link_name format a40
+column owner format a20
+column referenced_owner format a20
+set linesize 235
+
+
+select tabs.table_name tbl_name, trigs.trigger_name trg_name, seqs.sequence_name seq_name
+from all_tables tabs
+left join all_triggers trigs
+  on trigs.table_owner = tabs.owner
+  and trigs.table_name = tabs.table_name
+left join all_dependencies deps
+  on deps.owner = trigs.owner
+  and deps.name = trigs.trigger_name
+  and deps.referenced_type = 'SEQUENCE'
+left join all_sequences seqs
+  on seqs.sequence_owner = deps.referenced_owner
+  and seqs.sequence_name = deps.referenced_name
+where tabs.owner = 'JIRADBUSER' and tabs.table_name like 'AO_8BA09E%'
+  order by 1;
+
+select sequence_name from all_sequences where SEQUENCE_OWNER = 'JIRADBUSER' order by 1;
+
+
+
+
+select tabs.table_name tbl_name from all_tables tabs where tabs.owner = 'JIRADBUSER' order by 1;
+
+select trigs.trigger_name trg_name from all_triggers trigs where trigs.table_owner = 'JIRADBUSER' order by 1;
+
+select seqs.sequence_name seq_name from all_sequences seqs where seqs.sequence_owner = 'JIRADBUSER' order by 1;
+
+- проще всего -- из бэкапа восстановить.
+- выслать список таблиц и список seq для JIRA7A
+
+select table_name from all_tables where owner = 'JIRADENUSER' order by 1;
+select sequence_name from all_sequences where sequence_owner = 'JIRADENUSER' order by 1;
+
+
+
+
+
+----- Cross-Join запрос.
+
+select tabs.table_name tbl_name, trigs.trigger_name trg_name, seqs.sequence_name seq_name
+from all_tables tabs
+left join all_triggers trigs
+  on trigs.table_owner = tabs.owner
+  and trigs.table_name = tabs.table_name
+left join all_dependencies deps
+  on deps.owner = trigs.owner
+  and deps.name = trigs.trigger_name
+  and deps.referenced_type = 'SEQUENCE'
+left join all_sequences seqs
+  on seqs.sequence_owner = deps.referenced_owner
+  and seqs.sequence_name = deps.referenced_name
+where tabs.owner = 'JIRADBUSER' and tabs.table_name like 'AO_%'
+union 
+select tabs.table_name tbl_name, trigs.trigger_name trg_name, seqs.sequence_name seq_name
+from all_sequences seqs
+left join all_dependencies deps
+  on seqs.sequence_owner = deps.referenced_owner
+  and seqs.sequence_name = deps.referenced_name
+  and deps.referenced_type = 'SEQUENCE'
+left join all_triggers trigs
+  on deps.owner = trigs.owner
+  and deps.name = trigs.trigger_name
+left join all_tables tabs
+  on trigs.table_owner = tabs.owner
+  and trigs.table_name = tabs.table_name
+where seqs.sequence_owner = 'JIRADBUSER' and seqs.sequence_name like 'AO_%'
+  order by 1,3;
+
+
+
+
+
+select * from all_sequences seqs where seqs.sequence_owner = 'JIRADBUSER' and seqs.sequence_name = 'AO_21D670_WHITELIST1050971807';
+select * from all_dependencies deps where deps.referenced_owner = 'JIRADBUSER' and deps.referenced_name = 'AO_21D670_WHITELIST1050971807';
+
+select * from all_dependencies deps where deps.referenced_owner = 'JIRADBUSER' and deps.referenced_name like 'AO_%' and deps.referenced_type = 'SEQUENCE';
+select * from all_dependencies deps where deps.referenced_owner = 'JIRADBUSER' and deps.name like 'AO_%' and deps.referenced_type = 'SEQUENCE';
+select * from all_dependencies deps where deps.owner = 'JIRADBUSER' and deps.referenced_type = 'SEQUENCE';
+
+
+
+
+
+
+
+select tabs.table_name tbl_name, trigs.trigger_name trg_name, seqs.sequence_name seq_name
+from all_tables tabs
+join all_triggers trigs
+  on trigs.table_owner = tabs.owner
+  and trigs.table_name = tabs.table_name
+join all_dependencies deps
+  on deps.owner = trigs.owner
+  and deps.name = trigs.trigger_name
+join all_sequences seqs
+  on seqs.sequence_owner = deps.referenced_owner
+  and seqs.sequence_name = deps.referenced_name
+where tabs.owner = 'JIRADBUSER';
+  2    3    4    5    6    7    8    9   10   11   12
+TBL_NAME                      |TRG_NAME                      |SEQ_NAME
+------------------------------|------------------------------|------------------------------
+AO_21D670_WHITELIST_RULES     |AO_21D670_WHITELIST1594836527 |AO_21D670_WHITELIST1050971807
+AO_38321B_CUSTOM_CONTENT_LINK |AO_38321B_CUSTOM_CO1725468459 |AO_38321B_CUSTOM_CO518521787
+AO_3B1893_LOOP_DETECTION      |AO_3B1893_LOOP_DETE2057416290 |AO_3B1893_LOOP_DETE1430325330
+AO_4AEACD_WEBHOOK_DAO         |AO_4AEACD_WEBHOOK_D367380484  |AO_4AEACD_WEBHOOK_DAO_ID_SEQ
+AO_550953_SHORTCUT            |AO_550953_SHORTCUT_ID_autoinc |AO_550953_SHORTCUT_ID_SEQ
+AO_563AEE_ACTIVITY_ENTITY     |AO_563AEE_ACTIVITY_2049621296 |AO_563AEE_ACTIVITY_1503919168
+AO_563AEE_ACTOR_ENTITY        |AO_563AEE_ACTOR_ENT1035690558 |AO_563AEE_ACTOR_ENTITY_ID_SEQ
+AO_563AEE_MEDIA_LINK_ENTITY   |AO_563AEE_MEDIA_LIN941016740  |AO_563AEE_MEDIA_LIN1151934540
+AO_563AEE_OBJECT_ENTITY       |AO_563AEE_OBJECT_EN162779642  |AO_563AEE_OBJECT_ENTITY_ID_SEQ
+AO_563AEE_TARGET_ENTITY       |AO_563AEE_TARGET_EN1262105640 |AO_563AEE_TARGET_ENTITY_ID_SEQ
+AO_575BF5_PROCESSED_COMMITS   |AO_575BF5_PROCESSED1639143119 |AO_575BF5_PROCESSED975826751
+AO_575BF5_PROVIDER_ISSUE      |AO_575BF5_PROVIDER_989880529  |AO_575BF5_PROVIDER_1420388255
+AO_587B34_PROJECT_CONFIG      |AO_587B34_PROJECT_C2129624221 |AO_587B34_PROJECT_C1734572589
+AO_5FB9D7_AOHIP_CHAT_LINK     |AO_5FB9D7_AOHIP_CHA67745274   |AO_5FB9D7_AOHIP_CHA1011653610
+AO_5FB9D7_AOHIP_CHAT_USER     |AO_5FB9D7_AOHIP_CHA760570487  |AO_5FB9D7_AOHIP_CHA1544183047
+AO_60DB71_AUDITENTRY          |AO_60DB71_AUDITENTR1965810697 |AO_60DB71_AUDITENTRY_ID_SEQ
+AO_60DB71_BOARDADMINS         |AO_60DB71_BOARDADMI798742460  |AO_60DB71_BOARDADMINS_ID_SEQ
+AO_60DB71_CARDCOLOR           |AO_60DB71_CARDCOLOR_ID_autoinc|AO_60DB71_CARDCOLOR_ID_SEQ
+AO_60DB71_CARDLAYOUT          |AO_60DB71_CARDLAYOU7096148    |AO_60DB71_CARDLAYOUT_ID_SEQ
+AO_60DB71_COLUMNSTATUS        |AO_60DB71_COLUMNSTA1711756550 |AO_60DB71_COLUMNSTATUS_ID_SEQ
+AO_60DB71_COLUMN              |AO_60DB71_COLUMN_ID_autoinc   |AO_60DB71_COLUMN_ID_SEQ
+AO_60DB71_DETAILVIEWFIELD     |AO_60DB71_DETAILVIE1352670882 |AO_60DB71_DETAILVIE629041006
+AO_60DB71_ESTIMATESTATISTIC   |AO_60DB71_ESTIMATES960041922  |AO_60DB71_ESTIMATES2121821138
+AO_60DB71_ISSUERANKINGLOG     |AO_60DB71_ISSUERANK882201119  |AO_60DB71_ISSUERANK1567494799
+AO_60DB71_ISSUERANKING        |AO_60DB71_ISSUERANK825214833  |AO_60DB71_ISSUERANKING_ID_SEQ
+AO_60DB71_LEXORANKBALANCER    |AO_60DB71_LEXORANKB274173924  |AO_60DB71_LEXORANKB336705292
+AO_60DB71_LEXORANK            |AO_60DB71_LEXORANK_ID_autoinc |AO_60DB71_LEXORANK_ID_SEQ
+AO_60DB71_NONWORKINGDAY       |AO_60DB71_NONWORKIN1366661106 |AO_60DB71_NONWORKINGDAY_ID_SEQ
+AO_60DB71_QUICKFILTER         |AO_60DB71_QUICKFILT660489567  |AO_60DB71_QUICKFILTER_ID_SEQ
+AO_60DB71_RANKABLEOBJECT      |AO_60DB71_RANKABLEO1672913001 |AO_60DB71_RANKABLEO37098969
+AO_60DB71_RAPIDVIEW           |AO_60DB71_RAPIDVIEW_ID_autoinc|AO_60DB71_RAPIDVIEW_ID_SEQ
+AO_60DB71_SPRINT              |AO_60DB71_SPRINT_ID_autoinc   |AO_60DB71_SPRINT_ID_SEQ
+AO_60DB71_STATSFIELD          |AO_60DB71_STATSFIEL365658317  |AO_60DB71_STATSFIELD_ID_SEQ
+AO_60DB71_SUBQUERY            |AO_60DB71_SUBQUERY_ID_autoinc |AO_60DB71_SUBQUERY_ID_SEQ
+AO_60DB71_SWIMLANE            |AO_60DB71_SWIMLANE_ID_autoinc |AO_60DB71_SWIMLANE_ID_SEQ
+AO_60DB71_TRACKINGSTATISTIC   |AO_60DB71_TRACKINGS1190426547 |AO_60DB71_TRACKINGS1474465725
+AO_60DB71_VERSION             |AO_60DB71_VERSION_ID_autoinc  |AO_60DB71_VERSION_ID_SEQ
+AO_60DB71_WORKINGDAYS         |AO_60DB71_WORKINGDA1764343970 |AO_60DB71_WORKINGDAYS_ID_SEQ
+AO_88263F_HEALTH_CHECK_STATUS |AO_88263F_HEALTH_CH953359915  |AO_88263F_HEALTH_CH2055344827
+AO_88263F_PROPERTIES          |AO_88263F_PROPERTIE471774752  |AO_88263F_PROPERTIES_ID_SEQ
+AO_88263F_READ_NOTIFICATIONS  |AO_88263F_READ_NOTI1571684108 |AO_88263F_READ_NOTI1693092892
+AO_8BA09E_GIT_REPOSITORY      |AO_8BA09E_GIT_REPOS617491370  |AO_8BA09E_GIT_REPOS2072996250
+AO_8BA09E_PROJECT_MAPPING     |AO_8BA09E_PROJECT_M2085113611 |AO_8BA09E_PROJECT_M610507397
+AO_8BA09E_PROJECT_SETTINGS    |AO_8BA09E_PROJECT_S1539337720 |AO_8BA09E_PROJECT_S945093912
+AO_8BA09E_PULL_REQUEST_V2     |AO_8BA09E_PULL_REQU320541427  |AO_8BA09E_PULL_REQU1012116355
+AO_8BA09E_PULL_REQUEST        |AO_8BA09E_PULL_REQU22774316   |AO_8BA09E_PULL_REQUEST_ID_SEQ
+AO_8BA09E_REPO_WATCHERS       |AO_8BA09E_REPO_WATC1054719183 |AO_8BA09E_REPO_WATCHERS_ID_SEQ
+AO_8BA09E_REVIEW_COMMENT_V2   |AO_8BA09E_REVIEW_CO1534674064 |AO_8BA09E_REVIEW_CO1826802784
+AO_8BA09E_REVIEW_COMMENT      |AO_8BA09E_REVIEW_CO2129921705 |AO_8BA09E_REVIEW_CO23028711
+AO_8BA09E_SCREGISTRATION      |AO_8BA09E_SCREGISTR1136201896 |AO_8BA09E_SCREGISTR2137601096
+AO_8BA09E_SCREGISTRATION_ERROR|AO_8BA09E_SCREGISTR1880935345 |AO_8BA09E_SCREGISTR702844095
+AO_8BA09E_SSH_KEY_ENTRY       |AO_8BA09E_SSH_KEY_E2109880344 |AO_8BA09E_SSH_KEY_ENTRY_ID_SEQ
+AO_8BA09E_UNTRCKDCOMM_NOTF    |AO_8BA09E_UNTRCKDCO784601440  |AO_8BA09E_UNTRCKDCO60332624
+AO_97EDAB_USERINVITATION      |AO_97EDAB_USERINVIT2044419018 |AO_97EDAB_USERINVIT1297086426
+AO_A0B856_WEB_HOOK_LISTENER_AO|AO_A0B856_WEB_HOOK_1582990342 |AO_A0B856_WEB_HOOK_625253910
+AO_A44657_HEALTH_CHECK_ENTITY |AO_A44657_HEALTH_CH111778620  |AO_A44657_HEALTH_CH1627668404
+AO_B9A0F0_APPLIED_TEMPLATE    |AO_B9A0F0_APPLIED_T643833264  |AO_B9A0F0_APPLIED_T1419615424
+AO_CFF990_AOTRANSITION_FAILURE|AO_CFF990_AOTRANSIT1638029115 |AO_CFF990_AOTRANSIT1172175445
+AO_E8B6CC_BRANCH_HEAD_MAPPING |AO_E8B6CC_BRANCH_HE809756485  |AO_E8B6CC_BRANCH_HE777071285
+AO_E8B6CC_BRANCH              |AO_E8B6CC_BRANCH_ID_autoinc   |AO_E8B6CC_BRANCH_ID_SEQ
+AO_E8B6CC_CHANGESET_MAPPING   |AO_E8B6CC_CHANGESET1541746352 |AO_E8B6CC_CHANGESET838655904
+AO_E8B6CC_COMMIT              |AO_E8B6CC_COMMIT_ID_autoinc   |AO_E8B6CC_COMMIT_ID_SEQ
+AO_E8B6CC_GIT_HUB_EVENT       |AO_E8B6CC_GIT_HUB_E1405306542 |AO_E8B6CC_GIT_HUB_EVENT_ID_SEQ
+AO_E8B6CC_ISSUE_MAPPING_V2    |AO_E8B6CC_ISSUE_MAP1694180720 |AO_E8B6CC_ISSUE_MAP1675872672
+AO_E8B6CC_ISSUE_MAPPING       |AO_E8B6CC_ISSUE_MAP921164969  |AO_E8B6CC_ISSUE_MAPPING_ID_SEQ
+AO_E8B6CC_ISSUE_TO_BRANCH     |AO_E8B6CC_ISSUE_TO_1407267633 |AO_E8B6CC_ISSUE_TO_1487711
+AO_E8B6CC_ISSUE_TO_CHANGESET  |AO_E8B6CC_ISSUE_TO_283522063  |AO_E8B6CC_ISSUE_TO_366832767
+AO_E8B6CC_MESSAGE             |AO_E8B6CC_MESSAGE_ID_autoinc  |AO_E8B6CC_MESSAGE_ID_SEQ
+AO_E8B6CC_MESSAGE_QUEUE_ITEM  |AO_E8B6CC_MESSAGE_Q736107126  |AO_E8B6CC_MESSAGE_Q1971917690
+AO_E8B6CC_MESSAGE_TAG         |AO_E8B6CC_MESSAGE_T385715665  |AO_E8B6CC_MESSAGE_TAG_ID_SEQ
+AO_E8B6CC_ORGANIZATION_MAPPING|AO_E8B6CC_ORGANIZAT606265089  |AO_E8B6CC_ORGANIZAT1057398671
+AO_E8B6CC_ORG_TO_PROJECT      |AO_E8B6CC_ORG_TO_PR541391597  |AO_E8B6CC_ORG_TO_PR1297391741
+AO_E8B6CC_PROJECT_MAPPING_V2  |AO_E8B6CC_PROJECT_M311916912  |AO_E8B6CC_PROJECT_M1929213344
+AO_E8B6CC_PROJECT_MAPPING     |AO_E8B6CC_PROJECT_M1657538729 |AO_E8B6CC_PROJECT_M46767641
+AO_E8B6CC_PR_ISSUE_KEY        |AO_E8B6CC_PR_ISSUE_433559129  |AO_E8B6CC_PR_ISSUE_KEY_ID_SEQ
+AO_E8B6CC_PR_PARTICIPANT      |AO_E8B6CC_PR_PARTIC672722291  |AO_E8B6CC_PR_PARTIC77412861
+AO_E8B6CC_PR_TO_COMMIT        |AO_E8B6CC_PR_TO_COM65845925   |AO_E8B6CC_PR_TO_COMMIT_ID_SEQ
+AO_E8B6CC_PULL_REQUEST        |AO_E8B6CC_PULL_REQU1076535986 |AO_E8B6CC_PULL_REQUEST_ID_SEQ
+AO_E8B6CC_REPO_TO_CHANGESET   |AO_E8B6CC_REPO_TO_C1579265802 |AO_E8B6CC_REPO_TO_C1371411686
+AO_E8B6CC_REPO_TO_PROJECT     |AO_E8B6CC_REPO_TO_P1640785327 |AO_E8B6CC_REPO_TO_P1339911711
+AO_E8B6CC_SYNC_AUDIT_LOG      |AO_E8B6CC_SYNC_AUDI1383335129 |AO_E8B6CC_SYNC_AUDI1208844393
+AO_E8B6CC_SYNC_EVENT          |AO_E8B6CC_SYNC_EVEN1532960653 |AO_E8B6CC_SYNC_EVENT_ID_SEQ
+AO_ED669C_SEEN_ASSERTIONS     |AO_ED669C_SEEN_ASSE1054806950 |AO_ED669C_SEEN_ASSE926810698
+
+83 rows selected.
+
+
+
+
+select sequence_name from all_sequences where sequence_name like 'AO_8BA09E%';
+
+
+
+select tabs.table_name tbl_name, trigs.trigger_name trg_name, seqs.sequence_name seq_name
+from all_tables tabs
+left join all_triggers trigs
+  on trigs.table_owner = tabs.owner
+  and trigs.table_name = tabs.table_name
+left join all_dependencies deps
+  on deps.owner = trigs.owner
+  and deps.name = trigs.trigger_name
+  and deps.referenced_type = 'SEQUENCE'
+left join all_sequences seqs
+  on seqs.sequence_owner = deps.referenced_owner
+  and seqs.sequence_name = deps.referenced_name
+where tabs.owner = 'JIRADBUSER' and tabs.table_name like 'AO_8BA09E%'
+  order by 1;
+
+
+AO_8BA09E_GIT_REPOSITORY                |AO_8BA09E_GIT_REPOS617491370            |AO_8BA09E_GIT_REPOS2072996250
+AO_8BA09E_PROJECT_MAPPING               |AO_8BA09E_PROJECT_M2085113611           |AO_8BA09E_PROJECT_M610507397
+AO_8BA09E_PROJECT_SETTINGS              |AO_8BA09E_PROJECT_S1539337720           |AO_8BA09E_PROJECT_S945093912
+AO_8BA09E_PULL_REQUEST                  |AO_8BA09E_PULL_REQU22774316             |AO_8BA09E_PULL_REQUEST_ID_SEQ
+AO_8BA09E_PULL_REQUEST_V2               |AO_8BA09E_PULL_REQU320541427            |AO_8BA09E_PULL_REQU1012116355
+AO_8BA09E_REPO_WATCHERS                 |AO_8BA09E_REPO_WATC1054719183           |AO_8BA09E_REPO_WATCHERS_ID_SEQ
+AO_8BA09E_REVIEW_COMMENT                |AO_8BA09E_REVIEW_CO2129921705           |AO_8BA09E_REVIEW_CO23028711
+AO_8BA09E_REVIEW_COMMENT_V2             |AO_8BA09E_REVIEW_CO1534674064           |AO_8BA09E_REVIEW_CO1826802784
+AO_8BA09E_SCREGISTRATION                |AO_8BA09E_SCREGISTR1136201896           |AO_8BA09E_SCREGISTR2137601096
+AO_8BA09E_SCREGISTRATION_ERROR          |AO_8BA09E_SCREGISTR1880935345           |AO_8BA09E_SCREGISTR702844095
+AO_8BA09E_SSH_KEY_ENTRY                 |AO_8BA09E_SSH_KEY_E2109880344           |AO_8BA09E_SSH_KEY_ENTRY_ID_SEQ
+AO_8BA09E_UNTRCKDCOMM_NOTF              |AO_8BA09E_UNTRCKDCO784601440            |AO_8BA09E_UNTRCKDCO60332624
+AO_8BA09E_WEB_HOOK_ENTRY                |                                        |
+
+
+drop table AO_8BA09E_GIT_REPOSITORY;
+drop table AO_8BA09E_PROJECT_MAPPING;
+drop table AO_8BA09E_PROJECT_SETTINGS;
+drop table AO_8BA09E_PULL_REQUEST;
+drop table AO_8BA09E_PULL_REQUEST_V2;
+drop table AO_8BA09E_REPO_WATCHERS;
+drop table AO_8BA09E_REVIEW_COMMENT;
+drop table AO_8BA09E_REVIEW_COMMENT_V2;
+drop table AO_8BA09E_SCREGISTRATION_ERROR;
+drop table AO_8BA09E_SCREGISTRATION;
+drop table AO_8BA09E_SSH_KEY_ENTRY;
+drop table AO_8BA09E_UNTRCKDCOMM_NOTF;
+drop table AO_8BA09E_WEB_HOOK_ENTRY;
+
+drop sequence AO_8BA09E_GIT_REPOS2072996250;
+drop sequence AO_8BA09E_PROJECT_M610507397;
+drop sequence AO_8BA09E_PROJECT_S945093912;
+drop sequence AO_8BA09E_PULL_REQUEST_ID_SEQ;
+drop sequence AO_8BA09E_PULL_REQU1012116355;
+drop sequence AO_8BA09E_REPO_WATCHERS_ID_SEQ;
+drop sequence AO_8BA09E_REVIEW_CO23028711;
+drop sequence AO_8BA09E_REVIEW_CO1826802784;
+drop sequence AO_8BA09E_SCREGISTR2137601096;
+drop sequence AO_8BA09E_SCREGISTR702844095;
+drop sequence AO_8BA09E_SSH_KEY_ENTRY_ID_SEQ;
+drop sequence AO_8BA09E_UNTRCKDCO60332624;
+
+
+column c1 heading "object|level"         format a16
+column c2 heading "object|name"          format a60
+column c3 heading "referencing|object"   format a60
+
+select
+   lpad (' ', 2 * (level - 1)) || to_char (level, '999') as c1,
+   owner || '.' || name || ' (' || type || ')' as c2,
+   referenced_owner || '.' || referenced_name || ' (' || referenced_type || ')' as c3
+from
+   dba_dependencies
+start with
+   owner = 'JIRADBUSER'
+and
+   name like 'AO_%'
+connect by prior
+   referenced_owner = owner
+and prior
+   referenced_name = name
+and prior
+   referenced_type = type
+and
+   type = 'TABLE';
+
+
+
+
+
+
+select tabs.table_name tbl_name, trigs.trigger_name trg_name, seqs.sequence_name seq_name
+from all_tables tabs
+left join all_triggers trigs
+  on trigs.table_name = tabs.table_name
+left join all_dependencies deps
+  on deps.name = trigs.trigger_name
+  and deps.referenced_type = 'SEQUENCE'
+left join all_sequences seqs
+  on seqs.sequence_name = deps.referenced_name
+where tabs.owner = 'JIRADBUSER' and tabs.table_name like 'AO_%'
+union 
+select tabs.table_name tbl_name, trigs.trigger_name trg_name, seqs.sequence_name seq_name
+from all_sequences seqs
+left join all_dependencies deps
+  on seqs.sequence_name = deps.referenced_name
+  and deps.referenced_type = 'SEQUENCE'
+left join all_triggers trigs
+  on deps.name = trigs.trigger_name
+left join all_tables tabs
+  on trigs.table_name = tabs.table_name
+where seqs.sequence_owner = 'JIRADBUSER' and seqs.sequence_name like 'AO_%'
+  order by 1,3;
+
+
+
+
+
+
+
+
+
