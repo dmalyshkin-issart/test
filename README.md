@@ -6,8 +6,6 @@ Testing smart commits
 Testing smart commits
 
 
-df'lfdgk;df
-;lfdkgdf
 Test repo
 
 Master commit 1a here
