@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<StoredEnvironments xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <AreItemsEncrypted>false</AreItemsEncrypted>
+  <Items>
+    <ObjectBase xsi:type="Environment">
+      <Name>Test</Name>
+      <AreItemsEncrypted>false</AreItemsEncrypted>
+      <Items>
+        <ObjectBase xsi:type="Container">
+          <Name>New Static Container 1</Name>
+          <AreItemsEncrypted>false</AreItemsEncrypted>
+          <Items>
+            <ObjectBase xsi:type="MsSqlDatabaseInfo">
+              <Name>WS148\SQLEXPRESS [packageResult]</Name>
+              <AreItemsEncrypted>false</AreItemsEncrypted>
+              <Items />
+              <Key>9ffa7a0f-9187-44d9-a3b0-d5b71a7a156b</Key>
+              <AreCredentialsEncrypted>false</AreCredentialsEncrypted>
+              <DatabaseName>packageResult</DatabaseName>
+              <ServerName>WS148</ServerName>
+              <InstanceName>SQLEXPRESS</InstanceName>
+            </ObjectBase>
+          </Items>
+          <Key>a7317abb-8cc5-42cd-9627-6d97dcd1a712</Key>
+          <AreCredentialsEncrypted>false</AreCredentialsEncrypted>
+          <Credentials>
+            <AuthenticationType>SqlAuthentication</AuthenticationType>
+            <Password>123</Password>
+            <UserName>test</UserName>
+          </Credentials>
+        </ObjectBase>
+      </Items>
+      <Key>51189190-dbc2-4483-a574-d37bc80719f6</Key>
+      <AreCredentialsEncrypted>false</AreCredentialsEncrypted>
+      <Credentials>
+        <AuthenticationType>SqlAuthentication</AuthenticationType>
+        <Password>123</Password>
+        <UserName>test</UserName>
+      </Credentials>
+    </ObjectBase>
+  </Items>
+  <Key>19758726-860b-4637-9b82-470c8fbf3b66</Key>
+</StoredEnvironments>

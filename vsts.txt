@@ -1,0 +1,78 @@
+
+callbackUrl: https://jiragitcloud.bigbrassband.com/api/1/oauth/vsts/
+scope: vso.code_write
+
+oauthClientId: SJ9LbSYYpGHTvfNeB6
+oauthSecret: GGEt2p38bafS5ApGWm8Qq5LpF7EByDPq
+
+---------------------------------------------------------
+
+url: /api/1/oauth/vsts/redirect
+description: >
+  When user clicks 'Connect' button in Wizard he opens this page.
+  It sets bbbSessionToken to cookie to use it later.
+  Then it redirects browser to Microsoft page to confirm oAuth authentication.
+  When user confirms it redirects back to vstsCallback.yaml.
+
+parameters:
+  - {field: sessionAndInstall, type: object, source: sessionTokenQueryString, description: Checks session token and returns session values}
+  - {field: installId, type: string, source: installProperties, propsFieldName: sessionAndInstall, description: Customer install ID, tracked: true}
+  - {field: b3roles, type: string, source: sessionValues, propsFieldName: sessionAndInstall, description: B3 roles, tracked: true}
+  - {field: repoId, type: string, source: queryString, description: Repo Id, tracked: true}
+  - {field: bbbSessionToken, type: string, source: queryString, description: Session token to inject}
+  - {field: type, type: string, source: static, value: vstsSource, description: Source type}
+  - {field: url, type: string, source: static, value: "", description: "URL to redirect"}
+  - {field: stateKey, type: string, source: newUuid, description: "Key where fields are temporary stored", tracked: true}
+
+tasks:
+  - roleCheck:
+        roleField: b3roles 
+        requireOneOf: [admin]
+  - oAuthStoreRedirectFields:
+      fieldsToStore: [installId, repoId, type]
+      keyField: stateKey
+  - oAuthBuildConnectUrl:
+      source:
+        "$ref": ../../conf/sourcesVsts.yaml
+      urlField: url
+      templateFields:
+        - source.scope
+        - source.oauthClientId
+        - source.callbackUrl
+        - fields.stateKey
+      urlTemplate: "https://app.vssps.visualstudio.com/oauth2/authorize?response_type=Assertion&scope={0}&client_id={1}&redirect_uri={2}&state={3}"
+  - httpRedirect:
+      httpStatusCode: 303
+      urlField: url
+
+---------------------------------------------------------
+
+url: /api/1/oauth/vsts/
+description: >
+  User comes here after he clicks "Confirm" in Microsoft oAuth page.
+  We get authorization `code` in query string.
+  This pages stores `code` to cookie to use it later in JS.
+  Then it redirects user back to JIRA using kind of URL that says to our JS to open Wizard automatically.
+  So it's done here.
+  .
+  In JIRA our JS opens Wizard where it continues connecting process, shows spinners, makes requests etc.
+  This actions does nothing with this.
+  All gettingToken/ping/connect requests are done later from JS and other API actions handle it.
+
+parameters:
+  - {field: code, type: string, source: queryString, description: Authorization code}
+  - {field: state, type: string, source: queryString, description: Key that identifies saved data, tracked: true}
+  - {field: stateWithCode, type: string, source: newUuid, description: Key that identifies saved data with authorization code, tracked: true}
+  - {field: error, type: string, source: queryString, description: Authorization error}
+  - {field: redirectUrl, type: string, source: static, value: "", description: UI url to open. Value that is set by task}
+
+tasks:
+  - oAuthCallback:
+      addOnKey: "$addOnKey"
+      urlField: redirectUrl
+      keyWithCodeField: stateWithCode
+  - httpRedirect:
+      httpStatusCode: 303
+      urlField: redirectUrl
+
+
