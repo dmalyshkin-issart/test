@@ -15,6 +15,7 @@ Testing smart commits 001
 Testing smart commits 002
 Testing smart commits 003
 Testing smart commits 004
+Testing smart commits 005
 
 
 Test repo
