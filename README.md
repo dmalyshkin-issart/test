@@ -30,6 +30,7 @@ Testing smart commits 017
 Testing smart commits 018
 
 Testing smart commits 019
+Testing smart commits 020
 
 
 Test repo
