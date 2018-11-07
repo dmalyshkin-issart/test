@@ -1,0 +1,51 @@
+NCDbg version: 0.8.0-39-gf44fec2
+Local Java version: 1.8.0_66
+Connecting to localhost:5005...
+Exception in thread "main" java.lang.BootstrapMethodError: java.lang.NoClassDefFoundError: com/sun/jdi/VirtualMachine
+        at com.programmaticallyspeaking.ncd.boot.Broker.connect(Broker.scala:27)
+        at com.programmaticallyspeaking.ncd.boot.Boot$.delayedEndpoint$com$programmaticallyspeaking$ncd$boot$Boot$1(Boot.scala:37)
+        at com.programmaticallyspeaking.ncd.boot.Boot$delayedInit$body.apply(Boot.scala:16)
+        at scala.Function0.apply$mcV$sp(Function0.scala:34)
+        at scala.Function0.apply$mcV$sp$(Function0.scala:34)
+        at scala.runtime.AbstractFunction0.apply$mcV$sp(AbstractFunction0.scala:12)
+        at scala.App.$anonfun$main$1$adapted(App.scala:76)
+        at scala.collection.immutable.List.foreach(List.scala:389)
+        at scala.App.main(App.scala:76)
+        at scala.App.main$(App.scala:74)
+        at com.programmaticallyspeaking.ncd.boot.Boot$.main(Boot.scala:16)
+        at com.programmaticallyspeaking.ncd.boot.Boot.main(Boot.scala)
+Caused by: java.lang.NoClassDefFoundError: com/sun/jdi/VirtualMachine
+        ... 12 more
+Caused by: java.lang.ClassNotFoundException: com.sun.jdi.VirtualMachine
+        at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+        at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:331)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+        ... 12 more
+Exception in thread "Thread-1" java.lang.NoClassDefFoundError: com/sun/jdi/Bootstrap
+        at com.programmaticallyspeaking.ncd.nashorn.Connections$.getConnector(Connections.scala:13)
+        at com.programmaticallyspeaking.ncd.nashorn.Connections$.connect(Connections.scala:9)
+        at com.programmaticallyspeaking.ncd.nashorn.NashornDebuggerConnector.connect(NashornDebugger.scala:26)
+        at com.programmaticallyspeaking.ncd.nashorn.NashornDebuggerConnector.$anonfun$connect$1(NashornDebugger.scala:18)
+        at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.ClassNotFoundException: com.sun.jdi.Bootstrap
+        at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+        at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:331)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+        ... 5 more
+
+
+
+NCDbg version: 0.8.0-39-gf44fec2
+Local Java version: 1.8.0_66
+Connecting to localhost:7777...
+Failed to connect to the debug target.
+Please make sure that the debug target is started with debug VM arguments, for example:
+  -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=localhost:7777
+
+[root@ip-172-31-19-185 ncdbg-0.8.0-39-gf44fec2]# ps -ef | grep java
+root       351 31313  0 00:40 pts/0    00:00:00 grep --color=auto java
+root     32569     1 99 00:38 pts/0    00:02:58 /opt/jdk1.8.0_66/bin/java -Djava.util.logging.config.file=/home/ec2-user/atlassian-jira-core-7.6.0-standalone/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Xms384m -Xmx8192m -Djava.awt.headless=true -Datlassian.standalone=JIRA -Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true -Dmail.mime.decodeparameters=true -Dorg.dom4j.factory=com.atlassian.core.xml.InterningDocumentFactory -Datlassian.plugins.enable.wait=500 -XX:-OmitStackTraceInFastThrow -Djira.home=/var/atlassian/jira-backup/jira-migrated-to-7.0.0to7.6.0/ -Datlassian.plugins.startup.options=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=localhost:7777 -Djdk.tls.ephemeralDHKeySize=2048 -Djava.protocol.handler.pkgs=org.apache.catalina.webresources -Xloggc:/home/ec2-user/atlassian-jira-core-7.6.0-standalone/logs/atlassian-jira-gc-%t.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=5 -XX:GCLogFileSize=20M -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCCause -classpath /home/ec2-user/atlassian-jira-core-7.6.0-standalone/bin/bootstrap.jar:/home/ec2-user/atlassian-jira-core-7.6.0-standalone/bin/tomcat-juli.jar -Dcatalina.base=/home/ec2-user/atlassian-jira-core-7.6.0-standalone -Dcatalina.home=/home/ec2-user/atlassian-jira-core-7.6.0-standalone -Djava.io.tmpdir=/home/ec2-user/atlassian-jira-core-7.6.0-standalone/temp org.apache.catalina.startup.Bootstrap -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=localhost:7777 start
+
+
