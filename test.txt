@@ -1,3 +1,5 @@
+XA-XA-XA!
+
 NCDbg version: 0.8.0-39-gf44fec2
 Local Java version: 1.8.0_66
 Connecting to localhost:5005...
